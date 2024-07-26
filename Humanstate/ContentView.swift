@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTab: Int = 1
+    @State private var headerTitle: String = "Humanstate"
     @Environment(\.colorScheme) private var colorScheme
     
     private let tabViewOffset: CGFloat = 20
@@ -26,10 +27,13 @@ struct ContentView: View {
                     Group {
                         if selectedTab == 0 {
                             BodyView()
+                                .onAppear { headerTitle = "Bodystate" }
                         } else if selectedTab == 1 {
                             homeContent
+                                .onAppear { headerTitle = "Humanstate" }
                         } else if selectedTab == 2 {
                             MindView()
+                                .onAppear { headerTitle = "Mindstate" }
                         }
                     }
                     .padding(.horizontal)
@@ -50,7 +54,7 @@ struct ContentView: View {
     
     private var headerView: some View {
         HStack {
-            Text("Humanstate")
+            Text(headerTitle)
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Spacer()
@@ -67,13 +71,13 @@ struct ContentView: View {
     
     private var homeContent: some View {
         VStack(spacing: 20) {
-            CardView(title: "Body", progress: 56, readProgress: 0.5, exerciseProgress: 0.8, foodProgress: 0.4)
+            CardView(title: "Body", progress: 56, readProgress: 0.5, exerciseProgress: 0.8, nuitritionProgress: 0.4)
             
-            CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, foodProgress: 0.6, isReversed: true)
+            CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, nuitritionProgress: 0.6, isReversed: true)
 
             HStack(spacing: 20) {
                 PushUpsView()
-                PushUpsView()
+                BurpeesView()
             }
         }
     }
