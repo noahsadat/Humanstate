@@ -3,7 +3,7 @@ import SwiftUI
 struct CustomTabView: View {
     @Binding var selectedTab: Int
     @State private var xOffset: CGFloat = 0
-    @State private var isInitialized: Bool = false
+    @State private var viewWidth: CGFloat = 0
     
     var body: some View {
         GeometryReader { geometry in
@@ -22,19 +22,21 @@ struct CustomTabView: View {
             .background(.ultraThinMaterial)
             .clipShape(Capsule())
             .shadow(color: Color.primary.opacity(0.1), radius: 10, x: 0, y: 5)
-            .onChange(of: selectedTab) { _, newValue in
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                    xOffset = CGFloat(newValue) * (geometry.size.width / 3)
-                }
+            .onChange(of: selectedTab) { oldValue, newValue in
+                updateXOffset()
             }
-            .onAppear {
-                if !isInitialized {
-                    xOffset = CGFloat(selectedTab) * (geometry.size.width / 3)
-                    isInitialized = true
-                }
+            .onChange(of: geometry.size.width) { oldWidth, newWidth in
+                viewWidth = newWidth
+                updateXOffset()
             }
         }
         .frame(height: 60)
+    }
+    
+    private func updateXOffset() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            xOffset = CGFloat(selectedTab) * (viewWidth / 3)
+        }
     }
 }
 
