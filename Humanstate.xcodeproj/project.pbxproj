@@ -29,10 +29,45 @@
 		2F476B282C5264DF008E2369 /* HumanstateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumanstateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2F476CF42C5527EF008E2369 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				BodyView.swift,
+				ContentView.swift,
+				CustomTabView.swift,
+				ExerciseViews/BicycleCrunches.swift,
+				ExerciseViews/Burpees.swift,
+				ExerciseViews/Crunches.swift,
+				ExerciseViews/GluteBridges.swift,
+				ExerciseViews/HighKnees.swift,
+				ExerciseViews/JumpingJacks.swift,
+				ExerciseViews/LegRaises.swift,
+				ExerciseViews/Lunges.swift,
+				ExerciseViews/MountainClimbers.swift,
+				ExerciseViews/Plank.swift,
+				ExerciseViews/PushUps.swift,
+				ExerciseViews/RussianTwists.swift,
+				ExerciseViews/SitUps.swift,
+				ExerciseViews/Squats.swift,
+				ExerciseViews/TricepDips.swift,
+				HumanstateApp.swift,
+				MindView.swift,
+				"Preview Content/Preview Assets.xcassets",
+				ProfileView.swift,
+				Views/BodyActivityCard.swift,
+				Views/HomeCardView.swift,
+				Views/MindActivityCard.swift,
+			);
+			target = 2F476B0D2C5264DD008E2369 /* Humanstate */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2F476B102C5264DD008E2369 /* Humanstate */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Humanstate; sourceTree = "<group>"; };
 		2F476B212C5264DF008E2369 /* HumanstateTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HumanstateTests; sourceTree = "<group>"; };
 		2F476B2B2C5264DF008E2369 /* HumanstateUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HumanstateUITests; sourceTree = "<group>"; };
+		2F476CDB2C5527EF008E2369 /* Humanstate */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2F476CF42C5527EF008E2369 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Humanstate; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +98,7 @@
 		2F476B052C5264DD008E2369 = {
 			isa = PBXGroup;
 			children = (
-				2F476B102C5264DD008E2369 /* Humanstate */,
+				2F476CDB2C5527EF008E2369 /* Humanstate */,
 				2F476B212C5264DF008E2369 /* HumanstateTests */,
 				2F476B2B2C5264DF008E2369 /* HumanstateUITests */,
 				2F476B0F2C5264DD008E2369 /* Products */,
@@ -94,9 +129,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				2F476B102C5264DD008E2369 /* Humanstate */,
 			);
 			name = Humanstate;
 			packageProductDependencies = (

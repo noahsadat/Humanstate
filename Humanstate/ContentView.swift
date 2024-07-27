@@ -1,3 +1,4 @@
+// ContentView.swift
 import SwiftUI
 
 struct ContentView: View {
@@ -36,7 +37,6 @@ struct ContentView: View {
                                 .onAppear { headerTitle = "Mindstate" }
                         }
                     }
-                    .padding(.horizontal)
                     
                     Spacer()
                 }
@@ -71,15 +71,16 @@ struct ContentView: View {
     
     private var homeContent: some View {
         VStack(spacing: 20) {
-            CardView(title: "Body", progress: 56, readProgress: 0.5, exerciseProgress: 0.8, nuitritionProgress: 0.4)
+            CardView(title: "Body", progress: 56, readProgress: 0.5, exerciseProgress: 0.8, nutritionProgress: 0.4)
             
-            CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, nuitritionProgress: 0.6, isReversed: true)
+            CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, nutritionProgress: 0.6, isReversed: true)
 
             HStack(spacing: 20) {
                 PushUpsView()
                 BurpeesView()
             }
         }
+        .padding(.horizontal)
     }
 }
 

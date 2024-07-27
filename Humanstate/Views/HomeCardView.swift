@@ -5,7 +5,7 @@ struct CardView: View {
     var progress: Int
     var readProgress: CGFloat
     var exerciseProgress: CGFloat
-    var nuitritionProgress: CGFloat
+    var nutritionProgress: CGFloat
     var isReversed: Bool = false
     
     var body: some View {
@@ -16,13 +16,13 @@ struct CardView: View {
             
             HStack {
                 if isReversed {
-                    ProgressCircle(progress: progress, readProgress: readProgress, exerciseProgress: exerciseProgress, nuitritionProgress: nuitritionProgress)
+                    ProgressCircle(progress: progress, readProgress: readProgress, exerciseProgress: exerciseProgress, nutritionProgress: nutritionProgress)
                     Spacer()
-                    ProgressText(readProgress: readProgress, exerciseProgress: exerciseProgress, nuitritionProgress: nuitritionProgress)
+                    ProgressText(readProgress: readProgress, exerciseProgress: exerciseProgress, nutritionProgress: nutritionProgress)
                 } else {
-                    ProgressText(readProgress: readProgress, exerciseProgress: exerciseProgress, nuitritionProgress: nuitritionProgress)
+                    ProgressText(readProgress: readProgress, exerciseProgress: exerciseProgress, nutritionProgress: nutritionProgress)
                     Spacer()
-                    ProgressCircle(progress: progress, readProgress: readProgress, exerciseProgress: exerciseProgress, nuitritionProgress: nuitritionProgress)
+                    ProgressCircle(progress: progress, readProgress: readProgress, exerciseProgress: exerciseProgress, nutritionProgress: nutritionProgress)
                 }
             }
         }
@@ -39,7 +39,7 @@ struct ProgressCircle: View {
     var progress: Int
     var readProgress: CGFloat
     var exerciseProgress: CGFloat
-    var nuitritionProgress: CGFloat
+    var nutritionProgress: CGFloat
     
     var body: some View {
         ZStack {
@@ -61,7 +61,7 @@ struct ProgressCircle: View {
                 .frame(width: 120, height: 120)
             
             Circle()
-                .trim(from: 2 / 3, to: 2 / 3 + nuitritionProgress / 3)
+                .trim(from: 2 / 3, to: 2 / 3 + nutritionProgress / 3)
                 .stroke(Color.orange, lineWidth: 20)
                 .rotationEffect(Angle(degrees: -90))
                 .frame(width: 120, height: 120)
@@ -77,13 +77,13 @@ struct ProgressCircle: View {
 struct ProgressText: View {
     var readProgress: CGFloat
     var exerciseProgress: CGFloat
-    var nuitritionProgress: CGFloat
+    var nutritionProgress: CGFloat
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             ProgressRow(icon: "book.fill", text: "Read", color: .blue)
             ProgressRow(icon: "figure.walk", text: "Exercise", color: .green)
-            ProgressRow(icon: "fork.knife", text: "Nuitrition", color: .orange)
+            ProgressRow(icon: "fork.knife", text: "Nutrition", color: .orange)
         }
         .padding()
     }
