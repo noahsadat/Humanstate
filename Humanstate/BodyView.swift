@@ -7,11 +7,13 @@ struct BodyView: View {
             BodyActivityCard(activity: "Read", completed: 8, total: 10)
             BodyActivityCard(activity: "Exercise", completed: 3, total: 10)
             BodyActivityCard(activity: "Nutrition", completed: 5, total: 10)
+            BodyTasksView()
             Spacer() // This will push the cards to the top
         }
         .padding(.horizontal)
         .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     }
+    
 }
 
 struct BodyView_Previews: PreviewProvider {

@@ -76,8 +76,7 @@ struct ContentView: View {
             CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, nutritionProgress: 0.6, isReversed: true)
 
             HStack(spacing: 20) {
-                PushUpsView()
-                BurpeesView()
+                BodyTasksView()
             }
         }
         .padding(.horizontal)
