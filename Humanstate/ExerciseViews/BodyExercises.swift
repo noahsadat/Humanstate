@@ -1,4 +1,11 @@
+
+// BodyExercises.swift
 import Foundation
+
+struct BodyExercise: Identifiable {
+    let id = UUID()
+    let name: String
+}
 
 struct BodyExercises {
     static let all: [BodyExercise] = [
@@ -16,6 +23,5 @@ struct BodyExercises {
         BodyExercise(name: "Glute Bridges"),
         BodyExercise(name: "Crunches"),
         BodyExercise(name: "Burpees"),
-        // Add more exercises as needed
     ]
 }
