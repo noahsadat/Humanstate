@@ -6,7 +6,7 @@ struct BodyActivityCard: View {
     let total: Int
     @State private var isPlanning: Bool = false
     @State private var selectedExercise: String = "Push Ups"
-    @State private var selectedAmount: Int = 10
+    @State private var selectedAmount: Int = 0
     @Binding var tasks: [BodyTask]
     @Binding var availableExercises: [BodyExercise]
     
@@ -29,7 +29,7 @@ struct BodyActivityCard: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 5) {
                         if activity == "Exercise" {
-                            Text("\(tasks.count) to go")
+                            Text("\(tasks.count) tasks")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             
@@ -48,7 +48,7 @@ struct BodyActivityCard: View {
                     }
                     Spacer()
                     if activity == "Exercise" {
-                        Text("\(tasks.count)/\(tasks.count)")
+                        Text("\(tasks.count) tasks")
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
@@ -100,7 +100,7 @@ struct BodyActivityCard: View {
                         .clipped()
                         
                         Picker("Amount", selection: $selectedAmount) {
-                            ForEach(1...20, id: \.self) { i in
+                            ForEach(0...20, id: \.self) { i in
                                 Text("\(i * 10)").tag(i * 10)
                             }
                         }
@@ -112,8 +112,8 @@ struct BodyActivityCard: View {
             }
             .frame(height: 120)
             
-            Button("Add") {
-                addTask()
+            Button("Save") {
+                saveTask()
                 withAnimation {
                     isPlanning = false
                 }
@@ -127,11 +127,15 @@ struct BodyActivityCard: View {
         }
     }
     
-    private func addTask() {
-        let newTask = BodyTask(name: selectedExercise, dailyGoal: selectedAmount)
-        tasks.append(newTask)
-        if let index = availableExercises.firstIndex(where: { $0.name == selectedExercise }) {
-            availableExercises.remove(at: index)
+    private func saveTask() {
+        if let index = tasks.firstIndex(where: { $0.name == selectedExercise }) {
+            tasks[index].dailyGoal = selectedAmount
+            if selectedAmount == 0 {
+                tasks.remove(at: index)
+            }
+        } else if selectedAmount > 0 {
+            let newTask = BodyTask(name: selectedExercise, dailyGoal: selectedAmount)
+            tasks.append(newTask)
         }
     }
 }

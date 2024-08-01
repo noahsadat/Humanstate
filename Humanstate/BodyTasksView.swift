@@ -12,17 +12,17 @@ struct BodyTasksView: View {
                 Text("Daily Tasks")
                     .font(.headline)
                 Spacer()
-                Text("\(currentTaskIndex + 1)/\(max(tasks.count, 1))")
+                Text("\(currentTaskIndex + 1)/\(incompleteTasks.count)")
                 Spacer()
             }
             .padding(.bottom, 10)
             
             // Task Content
-            if !tasks.isEmpty {
-                BodyTaskView(task: $tasks[currentTaskIndex], onTaskCompleted: handleTaskCompletion)
+            if !incompleteTasks.isEmpty {
+                BodyTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
-                    Text("No tasks added")
+                    Text("All tasks completed!")
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal)
@@ -30,9 +30,9 @@ struct BodyTasksView: View {
             }
             
             // Pagination Dots
-            if tasks.count > 1 {
+            if incompleteTasks.count > 1 {
                 HStack(spacing: 5) {
-                    ForEach(0..<tasks.count, id: \.self) { index in
+                    ForEach(0..<incompleteTasks.count, id: \.self) { index in
                         Circle()
                             .fill(index == currentTaskIndex ? Color.blue : Color.gray)
                             .frame(width: 8, height: 8)
@@ -47,7 +47,7 @@ struct BodyTasksView: View {
         .gesture(
             DragGesture()
                 .onEnded { value in
-                    if value.translation.width < 0 && currentTaskIndex < tasks.count - 1 {
+                    if value.translation.width < 0 && currentTaskIndex < incompleteTasks.count - 1 {
                         currentTaskIndex += 1
                     } else if value.translation.width > 0 && currentTaskIndex > 0 {
                         currentTaskIndex -= 1
@@ -56,23 +56,44 @@ struct BodyTasksView: View {
         )
     }
     
+    private var incompleteTasks: [BodyTask] {
+        tasks.filter { !$0.completed }
+    }
+    
+    private func binding(for task: BodyTask) -> Binding<BodyTask> {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
+            fatalError("Task not found")
+        }
+        return $tasks[index]
+    }
+    
     private func handleTaskCompletion(taskId: UUID) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
-            if let index = tasks.firstIndex(where: { $0.id == taskId }) {
-                let completedTask = tasks.remove(at: index)
-                availableExercises.append(BodyExercise(name: completedTask.name))
-                if currentTaskIndex >= tasks.count {
-                    currentTaskIndex = max(tasks.count - 1, 0)
+        if let index = tasks.firstIndex(where: { $0.id == taskId }) {
+            tasks[index].completed = true
+            tasks[index].count = 0
+            
+            // Move to the next incomplete task or reset to the first one if all are completed
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                if currentTaskIndex >= incompleteTasks.count - 1 {
+                    currentTaskIndex = 0
                 }
             }
         }
     }
 }
 
+struct BodyTask: Identifiable {
+    let id = UUID()
+    let name: String
+    var dailyGoal: Int
+    var count: Int = 0
+    var completed: Bool = false
+}
 
 struct BodyTaskView: View {
     @Binding var task: BodyTask
     var onTaskCompleted: (UUID) -> Void
+    @State private var showingWellDone: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -92,7 +113,7 @@ struct BodyTaskView: View {
                 
                 Spacer()
                 
-                if task.completed {
+                if showingWellDone {
                     Text("Well done!")
                         .font(.headline)
                         .foregroundColor(.green)
@@ -128,17 +149,16 @@ struct BodyTaskView: View {
     private func checkCompletion() {
         if task.count >= task.dailyGoal {
             withAnimation {
-                task.completed = true
+                showingWellDone = true
             }
-            onTaskCompleted(task.id)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation {
+                    showingWellDone = false
+                    task.completed = true
+                }
+                onTaskCompleted(task.id)
+            }
         }
     }
-}
-
-struct BodyTask: Identifiable {
-    let id = UUID()
-    let name: String
-    let dailyGoal: Int
-    var count: Int = 0
-    var completed: Bool = false
 }
