@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct MindTasksView: View {
-    @State private var tasks: [MindTask] = []
+    @Binding var tasks: [MindTask]
+    @Binding var availableExercises: [MindExercise]
     @State private var currentTaskIndex: Int = 0
     
     var body: some View {
@@ -11,21 +12,17 @@ struct MindTasksView: View {
                 Text("Daily Tasks")
                     .font(.headline)
                 Spacer()
-                Text("\(currentTaskIndex + 1)/\(max(tasks.count, 1))")
+                Text("\(currentTaskIndex + 1)/\(incompleteTasks.count)")
                 Spacer()
-                Button("Edit") {
-                    // Edit action to be implemented
-                }
-                .font(.subheadline)
             }
             .padding(.bottom, 10)
             
             // Task Content
-            if !tasks.isEmpty {
-                MindTaskView(task: tasks[currentTaskIndex])
+            if !incompleteTasks.isEmpty {
+                MindTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
-                    Text("No tasks added")
+                    Text("All tasks completed!")
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal)
@@ -33,9 +30,9 @@ struct MindTasksView: View {
             }
             
             // Pagination Dots
-            if tasks.count > 1 {
+            if incompleteTasks.count > 1 {
                 HStack(spacing: 5) {
-                    ForEach(0..<tasks.count, id: \.self) { index in
+                    ForEach(0..<incompleteTasks.count, id: \.self) { index in
                         Circle()
                             .fill(index == currentTaskIndex ? Color.blue : Color.gray)
                             .frame(width: 8, height: 8)
@@ -50,7 +47,7 @@ struct MindTasksView: View {
         .gesture(
             DragGesture()
                 .onEnded { value in
-                    if value.translation.width < 0 && currentTaskIndex < tasks.count - 1 {
+                    if value.translation.width < 0 && currentTaskIndex < incompleteTasks.count - 1 {
                         currentTaskIndex += 1
                     } else if value.translation.width > 0 && currentTaskIndex > 0 {
                         currentTaskIndex -= 1
@@ -58,17 +55,50 @@ struct MindTasksView: View {
                 }
         )
     }
+    
+    private var incompleteTasks: [MindTask] {
+        tasks.filter { !$0.completed }
+    }
+    
+    private func binding(for task: MindTask) -> Binding<MindTask> {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
+            fatalError("Task not found")
+        }
+        return $tasks[index]
+    }
+    
+    private func handleTaskCompletion(taskId: UUID) {
+        if let index = tasks.firstIndex(where: { $0.id == taskId }) {
+            tasks[index].completed = true
+            tasks[index].count = 0
+            
+            // Move to the next incomplete task or reset to the first one if all are completed
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                if currentTaskIndex >= incompleteTasks.count - 1 {
+                    currentTaskIndex = 0
+                }
+            }
+        }
+    }
 }
 
 struct MindTask: Identifiable {
     let id = UUID()
     let name: String
-    let viewName: String
+    var dailyGoal: Int
+    var count: Int = 0
+    var completed: Bool = false
 }
 
 struct MindTaskView: View {
-    let task: MindTask
-    @State private var count: Int = 0
+    @Binding var task: MindTask
+    let availableExercises: [MindExercise]
+    var onTaskCompleted: (UUID) -> Void
+    @State private var showingWellDone: Bool = false
+    
+    private var exercise: MindExercise? {
+        availableExercises.first(where: { $0.name == task.name })
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -79,7 +109,7 @@ struct MindTaskView: View {
             
             HStack {
                 Button(action: {
-                    count = max(0, count - 10)
+                    task.count = max(0, task.count - 1)
                 }) {
                     Image(systemName: "minus.circle")
                         .imageScale(.large)
@@ -88,16 +118,31 @@ struct MindTaskView: View {
                 
                 Spacer()
                 
-                Text(String(format: "%02d", count))
-                    .font(.system(size: 40, weight: .bold, design: .default))
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
+                if showingWellDone {
+                    Text("Well done!")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                        .transition(.opacity)
+                } else {
+                    VStack {
+                        Text(String(format: "%02d/%02d", task.count, task.dailyGoal))
+                            .font(.system(size: 40, weight: .bold, design: .default))
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                            .foregroundColor(.primary)
+                        Text(exercise?.countingUnit ?? "")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 
                 Spacer()
                 
                 Button(action: {
-                    count += 10
+                    if !task.completed {
+                        task.count = min(task.dailyGoal, task.count + 1)
+                        checkCompletion()
+                    }
                 }) {
                     Image(systemName: "plus.circle")
                         .imageScale(.large)
@@ -110,10 +155,20 @@ struct MindTaskView: View {
         .cornerRadius(20)
         .shadow(radius: 10)
     }
-}
-
-struct MindTasksView_Previews: PreviewProvider {
-    static var previews: some View {
-        MindTasksView()
+    
+    private func checkCompletion() {
+        if task.count >= task.dailyGoal {
+            withAnimation {
+                showingWellDone = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation {
+                    showingWellDone = false
+                    task.completed = true
+                }
+                onTaskCompleted(task.id)
+            }
+        }
     }
 }

@@ -1,4 +1,3 @@
-// MindActivityCard.swift
 import SwiftUI
 
 struct MindActivityCard: View {
@@ -7,7 +6,10 @@ struct MindActivityCard: View {
     let total: Int
     @State private var isPlanning: Bool = false
     @State private var selectedMindExercise: String = "Meditation"
-    @State private var selectedDuration: Int = 5
+    @State private var selectedAmount: Int = 5
+    @State private var pendingChanges: [String: Int] = [:]
+    @Binding var tasks: [MindTask]
+    @Binding var availableExercises: [MindExercise]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -18,6 +20,9 @@ struct MindActivityCard: View {
                 Spacer()
                 Button(isPlanning ? "Cancel" : "Plan") {
                     withAnimation {
+                        if isPlanning {
+                            pendingChanges.removeAll()
+                        }
                         isPlanning.toggle()
                     }
                 }
@@ -27,19 +32,36 @@ struct MindActivityCard: View {
             if !isPlanning {
                 HStack {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("\(total - completed) to go")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        ProgressView(value: Double(completed), total: Double(total))
-                            .progressViewStyle(LinearProgressViewStyle())
-                            .frame(width: 120)
+                        if activity == "Exercise" {
+                            Text("\(completedTasks) of \(tasks.count) completed")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            ProgressView(value: Double(completedTasks), total: Double(max(tasks.count, 1)))
+                                .progressViewStyle(LinearProgressViewStyle())
+                                .frame(width: 120)
+                        } else {
+                            Text("\(total - completed) to go")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            ProgressView(value: Double(completed), total: Double(total))
+                                .progressViewStyle(LinearProgressViewStyle())
+                                .frame(width: 120)
+                        }
                     }
                     Spacer()
-                    Text("\(completed)/\(total)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                    if activity == "Exercise" {
+                        Text("\(completedTasks)/\(tasks.count)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    } else {
+                        Text("\(completed)/\(total)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    }
                 }
             } else {
                 if activity == "Exercise" {
@@ -58,44 +80,61 @@ struct MindActivityCard: View {
         .animation(.spring(), value: isPlanning)
     }
     
+    private var completedTasks: Int {
+        tasks.filter { $0.completed }.count
+    }
+    
     private var mindExercisePlanningView: some View {
         VStack(spacing: 10) {
             GeometryReader { geometry in
                 VStack(spacing: 5) {
                     HStack(spacing: 0) {
                         Text("Mind Exercise")
-                            .frame(width: geometry.size.width * 0.65, alignment: .center)
-                        Text("Duration (min)")
-                            .frame(width: geometry.size.width * 0.35, alignment: .center)
+                            .frame(width: geometry.size.width * 0.5, alignment: .center)
+                        Text("Daily Goal")
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
+                        Text("Unit")
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
                     }
                     .font(.caption)
                     .foregroundColor(.secondary)
                     
                     HStack(spacing: 0) {
                         Picker("Mind Exercise", selection: $selectedMindExercise) {
-                            ForEach(["Meditation", "Breathing", "Visualization", "Journaling"], id: \.self) { exercise in
-                                Text(exercise).tag(exercise)
+                            ForEach(availableExercises, id: \.name) { exercise in
+                                Text(exercise.name).tag(exercise.name)
                             }
                         }
                         .pickerStyle(WheelPickerStyle())
-                        .frame(width: geometry.size.width * 0.65)
+                        .frame(width: geometry.size.width * 0.5)
                         .clipped()
+                        .onChange(of: selectedMindExercise) { oldValue, newValue in
+                            updateSelectedAmount()
+                        }
                         
-                        Picker("Duration", selection: $selectedDuration) {
-                            ForEach(1...12, id: \.self) { i in
-                                Text("\(i * 5)").tag(i * 5)
+                        Picker("Amount", selection: $selectedAmount) {
+                            ForEach(0...20, id: \.self) { i in
+                                let exercise = availableExercises.first(where: { $0.name == selectedMindExercise })!
+                                Text("\(i * exercise.countingStep)").tag(i * exercise.countingStep)
                             }
                         }
                         .pickerStyle(WheelPickerStyle())
-                        .frame(width: geometry.size.width * 0.35)
+                        .frame(width: geometry.size.width * 0.25)
                         .clipped()
+                        .onChange(of: selectedAmount) { oldValue, newValue in
+                            pendingChanges[selectedMindExercise] = newValue
+                        }
+                        
+                        Text(availableExercises.first(where: { $0.name == selectedMindExercise })?.countingUnit ?? "")
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
+                            .foregroundColor(.secondary)
                     }
                 }
             }
             .frame(height: 120)
             
-            Button("Add") {
-                // Here you would add the logic to save the mind exercise plan
+            Button("Save") {
+                saveAllTasks()
                 withAnimation {
                     isPlanning = false
                 }
@@ -107,5 +146,31 @@ struct MindActivityCard: View {
             .cornerRadius(10)
             .frame(maxWidth: .infinity)
         }
+    }
+    
+    private func updateSelectedAmount() {
+        if let amount = pendingChanges[selectedMindExercise] {
+            selectedAmount = amount
+        } else if let task = tasks.first(where: { $0.name == selectedMindExercise }) {
+            selectedAmount = task.dailyGoal
+        } else {
+            selectedAmount = 0
+        }
+    }
+    
+    private func saveAllTasks() {
+        for (exerciseName, amount) in pendingChanges {
+            if let index = tasks.firstIndex(where: { $0.name == exerciseName }) {
+                if amount == 0 {
+                    tasks.remove(at: index)
+                } else {
+                    tasks[index].dailyGoal = amount
+                }
+            } else if amount > 0 {
+                let newTask = MindTask(name: exerciseName, dailyGoal: amount)
+                tasks.append(newTask)
+            }
+        }
+        pendingChanges.removeAll()
     }
 }

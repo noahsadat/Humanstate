@@ -39,6 +39,7 @@
 				ContentView.swift,
 				CustomTabView.swift,
 				ExerciseViews/BodyExercises.swift,
+				ExerciseViews/MindExercises.swift,
 				HumanstateApp.swift,
 				MindTasksView.swift,
 				MindView.swift,
