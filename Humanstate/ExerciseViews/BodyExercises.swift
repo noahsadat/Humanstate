@@ -5,6 +5,7 @@ import Foundation
 struct BodyExercise: Identifiable {
     let id = UUID()
     let name: String
+    var dailyGoal: Int?
 }
 
 struct BodyExercises {

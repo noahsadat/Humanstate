@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct BodyTasksView: View {
-    @State private var tasks: [BodyTask] = []
+    @Binding var tasks: [BodyTask]
+    @Binding var availableExercises: [BodyExercise]
     @State private var currentTaskIndex: Int = 0
     
     var body: some View {
@@ -13,16 +14,12 @@ struct BodyTasksView: View {
                 Spacer()
                 Text("\(currentTaskIndex + 1)/\(max(tasks.count, 1))")
                 Spacer()
-                Button("Edit") {
-                    // Edit action to be implemented
-                }
-                .font(.subheadline)
             }
             .padding(.bottom, 10)
             
             // Task Content
             if !tasks.isEmpty {
-                BodyTaskView(task: tasks[currentTaskIndex])
+                BodyTaskView(task: $tasks[currentTaskIndex], onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
                     Text("No tasks added")
@@ -58,17 +55,24 @@ struct BodyTasksView: View {
                 }
         )
     }
+    
+    private func handleTaskCompletion(taskId: UUID) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+            if let index = tasks.firstIndex(where: { $0.id == taskId }) {
+                let completedTask = tasks.remove(at: index)
+                availableExercises.append(BodyExercise(name: completedTask.name))
+                if currentTaskIndex >= tasks.count {
+                    currentTaskIndex = max(tasks.count - 1, 0)
+                }
+            }
+        }
+    }
 }
 
-struct BodyTask: Identifiable {
-    let id = UUID()
-    let name: String
-    let viewName: String
-}
 
 struct BodyTaskView: View {
-    let task: BodyTask
-    @State private var count: Int = 0
+    @Binding var task: BodyTask
+    var onTaskCompleted: (UUID) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -79,7 +83,7 @@ struct BodyTaskView: View {
             
             HStack {
                 Button(action: {
-                    count = max(0, count - 10)
+                    task.count = max(0, task.count - 10)
                 }) {
                     Image(systemName: "minus.circle")
                         .imageScale(.large)
@@ -88,16 +92,26 @@ struct BodyTaskView: View {
                 
                 Spacer()
                 
-                Text(String(format: "%02d", count))
-                    .font(.system(size: 40, weight: .bold, design: .default))
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
+                if task.completed {
+                    Text("Well done!")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                        .transition(.opacity)
+                } else {
+                    Text(String(format: "%02d/%02d", task.count, task.dailyGoal))
+                        .font(.system(size: 40, weight: .bold, design: .default))
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
+                }
                 
                 Spacer()
                 
                 Button(action: {
-                    count += 10
+                    if !task.completed {
+                        task.count = min(task.dailyGoal, task.count + 10)
+                        checkCompletion()
+                    }
                 }) {
                     Image(systemName: "plus.circle")
                         .imageScale(.large)
@@ -110,10 +124,21 @@ struct BodyTaskView: View {
         .cornerRadius(20)
         .shadow(radius: 10)
     }
+    
+    private func checkCompletion() {
+        if task.count >= task.dailyGoal {
+            withAnimation {
+                task.completed = true
+            }
+            onTaskCompleted(task.id)
+        }
+    }
 }
 
-struct BodyTasksView_Previews: PreviewProvider {
-    static var previews: some View {
-        BodyTasksView()
-    }
+struct BodyTask: Identifiable {
+    let id = UUID()
+    let name: String
+    let dailyGoal: Int
+    var count: Int = 0
+    var completed: Bool = false
 }

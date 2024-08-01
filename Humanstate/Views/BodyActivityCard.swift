@@ -1,4 +1,3 @@
-// BodyActivityCard.swift
 import SwiftUI
 
 struct BodyActivityCard: View {
@@ -8,6 +7,8 @@ struct BodyActivityCard: View {
     @State private var isPlanning: Bool = false
     @State private var selectedExercise: String = "Push Ups"
     @State private var selectedAmount: Int = 10
+    @Binding var tasks: [BodyTask]
+    @Binding var availableExercises: [BodyExercise]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -27,19 +28,36 @@ struct BodyActivityCard: View {
             if !isPlanning {
                 HStack {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("\(total - completed) to go")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        ProgressView(value: Double(completed), total: Double(total))
-                            .progressViewStyle(LinearProgressViewStyle())
-                            .frame(width: 120)
+                        if activity == "Exercise" {
+                            Text("\(tasks.count) to go")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            ProgressView(value: Double(tasks.count), total: Double(max(tasks.count, 1)))
+                                .progressViewStyle(LinearProgressViewStyle())
+                                .frame(width: 120)
+                        } else {
+                            Text("\(total - completed) to go")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            ProgressView(value: Double(completed), total: Double(total))
+                                .progressViewStyle(LinearProgressViewStyle())
+                                .frame(width: 120)
+                        }
                     }
                     Spacer()
-                    Text("\(completed)/\(total)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                    if activity == "Exercise" {
+                        Text("\(tasks.count)/\(tasks.count)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    } else {
+                        Text("\(completed)/\(total)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                    }
                 }
             } else {
                 if activity == "Exercise" {
@@ -73,7 +91,7 @@ struct BodyActivityCard: View {
                     
                     HStack(spacing: 0) {
                         Picker("Exercise", selection: $selectedExercise) {
-                            ForEach(BodyExercises.all, id: \.name) { exercise in
+                            ForEach(availableExercises, id: \.name) { exercise in
                                 Text(exercise.name).tag(exercise.name)
                             }
                         }
@@ -83,7 +101,7 @@ struct BodyActivityCard: View {
                         
                         Picker("Amount", selection: $selectedAmount) {
                             ForEach(1...20, id: \.self) { i in
-                                Text("\(i * 10)").tag(i * 5)
+                                Text("\(i * 10)").tag(i * 10)
                             }
                         }
                         .pickerStyle(WheelPickerStyle())
@@ -95,7 +113,7 @@ struct BodyActivityCard: View {
             .frame(height: 120)
             
             Button("Add") {
-                // Here you would add the logic to save the exercise plan
+                addTask()
                 withAnimation {
                     isPlanning = false
                 }
@@ -106,6 +124,14 @@ struct BodyActivityCard: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .frame(maxWidth: .infinity)
+        }
+    }
+    
+    private func addTask() {
+        let newTask = BodyTask(name: selectedExercise, dailyGoal: selectedAmount)
+        tasks.append(newTask)
+        if let index = availableExercises.firstIndex(where: { $0.name == selectedExercise }) {
+            availableExercises.remove(at: index)
         }
     }
 }
