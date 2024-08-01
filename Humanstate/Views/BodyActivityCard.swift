@@ -90,9 +90,11 @@ struct BodyActivityCard: View {
                 VStack(spacing: 5) {
                     HStack(spacing: 0) {
                         Text("Exercise")
-                            .frame(width: geometry.size.width * 0.65, alignment: .center)
+                            .frame(width: geometry.size.width * 0.5, alignment: .center)
                         Text("Daily Goal")
-                            .frame(width: geometry.size.width * 0.35, alignment: .center)
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
+                        Text("Unit")
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
                     }
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -104,7 +106,7 @@ struct BodyActivityCard: View {
                             }
                         }
                         .pickerStyle(WheelPickerStyle())
-                        .frame(width: geometry.size.width * 0.65)
+                        .frame(width: geometry.size.width * 0.5)
                         .clipped()
                         .onChange(of: selectedExercise) { oldValue, newValue in
                             updateSelectedAmount()
@@ -112,15 +114,20 @@ struct BodyActivityCard: View {
                         
                         Picker("Amount", selection: $selectedAmount) {
                             ForEach(0...20, id: \.self) { i in
-                                Text("\(i * 10)").tag(i * 10)
+                                let exercise = availableExercises.first(where: { $0.name == selectedExercise })!
+                                Text("\(i * exercise.countingStep)").tag(i * exercise.countingStep)
                             }
                         }
                         .pickerStyle(WheelPickerStyle())
-                        .frame(width: geometry.size.width * 0.35)
+                        .frame(width: geometry.size.width * 0.25)
                         .clipped()
                         .onChange(of: selectedAmount) { oldValue, newValue in
                             pendingChanges[selectedExercise] = newValue
                         }
+                        
+                        Text(availableExercises.first(where: { $0.name == selectedExercise })?.countingUnit ?? "")
+                            .frame(width: geometry.size.width * 0.25, alignment: .center)
+                            .foregroundColor(.secondary)
                     }
                 }
             }
