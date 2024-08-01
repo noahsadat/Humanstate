@@ -7,6 +7,7 @@ struct BodyActivityCard: View {
     @State private var isPlanning: Bool = false
     @State private var selectedExercise: String = "Push Ups"
     @State private var selectedAmount: Int = 0
+    @State private var pendingChanges: [String: Int] = [:]
     @Binding var tasks: [BodyTask]
     @Binding var availableExercises: [BodyExercise]
     
@@ -19,6 +20,9 @@ struct BodyActivityCard: View {
                 Spacer()
                 Button(isPlanning ? "Cancel" : "Plan") {
                     withAnimation {
+                        if isPlanning {
+                            pendingChanges.removeAll()
+                        }
                         isPlanning.toggle()
                     }
                 }
@@ -29,11 +33,11 @@ struct BodyActivityCard: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 5) {
                         if activity == "Exercise" {
-                            Text("\(tasks.count) tasks")
+                            Text("\(completedTasks) of \(tasks.count) completed")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             
-                            ProgressView(value: Double(tasks.count), total: Double(max(tasks.count, 1)))
+                            ProgressView(value: Double(completedTasks), total: Double(max(tasks.count, 1)))
                                 .progressViewStyle(LinearProgressViewStyle())
                                 .frame(width: 120)
                         } else {
@@ -48,7 +52,7 @@ struct BodyActivityCard: View {
                     }
                     Spacer()
                     if activity == "Exercise" {
-                        Text("\(tasks.count) tasks")
+                        Text("\(completedTasks)/\(tasks.count)")
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
@@ -76,6 +80,10 @@ struct BodyActivityCard: View {
         .animation(.spring(), value: isPlanning)
     }
     
+    private var completedTasks: Int {
+        tasks.filter { $0.completed }.count
+    }
+    
     private var exercisePlanningView: some View {
         VStack(spacing: 10) {
             GeometryReader { geometry in
@@ -98,6 +106,9 @@ struct BodyActivityCard: View {
                         .pickerStyle(WheelPickerStyle())
                         .frame(width: geometry.size.width * 0.65)
                         .clipped()
+                        .onChange(of: selectedExercise) { oldValue, newValue in
+                            updateSelectedAmount()
+                        }
                         
                         Picker("Amount", selection: $selectedAmount) {
                             ForEach(0...20, id: \.self) { i in
@@ -107,13 +118,16 @@ struct BodyActivityCard: View {
                         .pickerStyle(WheelPickerStyle())
                         .frame(width: geometry.size.width * 0.35)
                         .clipped()
+                        .onChange(of: selectedAmount) { oldValue, newValue in
+                            pendingChanges[selectedExercise] = newValue
+                        }
                     }
                 }
             }
             .frame(height: 120)
             
             Button("Save") {
-                saveTask()
+                saveAllTasks()
                 withAnimation {
                     isPlanning = false
                 }
@@ -127,15 +141,29 @@ struct BodyActivityCard: View {
         }
     }
     
-    private func saveTask() {
-        if let index = tasks.firstIndex(where: { $0.name == selectedExercise }) {
-            tasks[index].dailyGoal = selectedAmount
-            if selectedAmount == 0 {
-                tasks.remove(at: index)
-            }
-        } else if selectedAmount > 0 {
-            let newTask = BodyTask(name: selectedExercise, dailyGoal: selectedAmount)
-            tasks.append(newTask)
+    private func updateSelectedAmount() {
+        if let amount = pendingChanges[selectedExercise] {
+            selectedAmount = amount
+        } else if let task = tasks.first(where: { $0.name == selectedExercise }) {
+            selectedAmount = task.dailyGoal
+        } else {
+            selectedAmount = 0
         }
+    }
+    
+    private func saveAllTasks() {
+        for (exerciseName, amount) in pendingChanges {
+            if let index = tasks.firstIndex(where: { $0.name == exerciseName }) {
+                if amount == 0 {
+                    tasks.remove(at: index)
+                } else {
+                    tasks[index].dailyGoal = amount
+                }
+            } else if amount > 0 {
+                let newTask = BodyTask(name: exerciseName, dailyGoal: amount)
+                tasks.append(newTask)
+            }
+        }
+        pendingChanges.removeAll()
     }
 }
