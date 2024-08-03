@@ -19,7 +19,7 @@ struct BodyTasksView: View {
             
             // Task Content
             if !incompleteTasks.isEmpty {
-                BodyTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), onTaskCompleted: handleTaskCompletion)
+                BodyTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
                     Text("All tasks completed!")
@@ -92,6 +92,7 @@ struct BodyTask: Identifiable {
 
 struct BodyTaskView: View {
     @Binding var task: BodyTask
+    let availableExercises: [BodyExercise]
     var onTaskCompleted: (UUID) -> Void
     @State private var showingWellDone: Bool = false
     
@@ -104,7 +105,8 @@ struct BodyTaskView: View {
             
             HStack {
                 Button(action: {
-                    task.count = max(0, task.count - 10)
+                    let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
+                    task.count = max(0, task.count - step)
                 }) {
                     Image(systemName: "minus.circle")
                         .imageScale(.large)
@@ -130,7 +132,8 @@ struct BodyTaskView: View {
                 
                 Button(action: {
                     if !task.completed {
-                        task.count = min(task.dailyGoal, task.count + 10)
+                        let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
+                        task.count = min(task.dailyGoal, task.count + step)
                         checkCompletion()
                     }
                 }) {

@@ -109,7 +109,8 @@ struct MindTaskView: View {
             
             HStack {
                 Button(action: {
-                    task.count = max(0, task.count - 1)
+                    let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
+                    task.count = max(0, task.count - step)
                 }) {
                     Image(systemName: "minus.circle")
                         .imageScale(.large)
@@ -130,7 +131,7 @@ struct MindTaskView: View {
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
                             .foregroundColor(.primary)
-                        Text(exercise?.countingUnit ?? "")
+                        Text(availableExercises.first(where: { $0.name == task.name })?.countingUnit ?? "")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -140,7 +141,8 @@ struct MindTaskView: View {
                 
                 Button(action: {
                     if !task.completed {
-                        task.count = min(task.dailyGoal, task.count + 1)
+                        let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
+                        task.count = min(task.dailyGoal, task.count + step)
                         checkCompletion()
                     }
                 }) {

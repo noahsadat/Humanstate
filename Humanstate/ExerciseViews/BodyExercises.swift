@@ -10,7 +10,7 @@ struct BodyExercise: Identifiable {
 
 struct BodyExercises {
     static let all: [BodyExercise] = [
-        BodyExercise(name: "Push Ups", countingUnit: "reps", countingStep: 1),
+        BodyExercise(name: "Push Ups", countingUnit: "reps", countingStep: 10),
         BodyExercise(name: "Sit Ups", countingUnit: "reps", countingStep: 5),
         BodyExercise(name: "Squats", countingUnit: "reps", countingStep: 5),
         BodyExercise(name: "Lunges", countingUnit: "reps", countingStep: 2),
