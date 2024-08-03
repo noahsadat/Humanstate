@@ -16,3 +16,9 @@ struct MindView: View {
         .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     }
 }
+
+struct MindView_Previews: PreviewProvider {
+    static var previews: some View {
+        MindView()
+    }
+}

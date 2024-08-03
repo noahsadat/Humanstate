@@ -16,3 +16,9 @@ struct BodyView: View {
         .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
     }
 }
+
+struct BodyView_Previews: PreviewProvider {
+    static var previews: some View {
+        BodyView()
+    }
+}

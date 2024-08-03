@@ -1,10 +1,12 @@
-// ContentView.swift
 import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTab: Int = 1
     @State private var headerTitle: String = "Humanstate"
     @Environment(\.colorScheme) private var colorScheme
+    
+    @State private var bodyExerciseTasks: [BodyTask] = []
+    @State private var mindExerciseTasks: [MindTask] = []
     
     private let tabViewOffset: CGFloat = 20
     
@@ -71,16 +73,41 @@ struct ContentView: View {
     
     private var homeContent: some View {
         VStack(spacing: 20) {
-            CardView(title: "Body", progress: 56, readProgress: 0.5, exerciseProgress: 0.8, nutritionProgress: 0.4)
+            CardView(
+                title: "Body",
+                progress: 56,
+                readProgress: 0.5,
+                exerciseProgress: calculateExerciseProgress(bodyExerciseTasks),
+                nutritionProgress: 0.4
+            )
             
-            CardView(title: "Mind", progress: 50, readProgress: 0.4, exerciseProgress: 0.5, nutritionProgress: 0.6, isReversed: true)
+            CardView(
+                title: "Mind",
+                progress: 50,
+                readProgress: 0.4,
+                exerciseProgress: calculateExerciseProgress(mindExerciseTasks),
+                nutritionProgress: 0.6,
+                isReversed: true
+            )
 
             HStack(spacing: 20) {
             }
         }
         .padding(.horizontal)
     }
+    
+    private func calculateExerciseProgress<T: TaskProtocol>(_ tasks: [T]) -> CGFloat {
+        let completedTasks = tasks.filter { $0.completed }.count
+        return tasks.isEmpty ? 0 : CGFloat(completedTasks) / CGFloat(tasks.count)
+    }
 }
+
+protocol TaskProtocol {
+    var completed: Bool { get }
+}
+
+extension BodyTask: TaskProtocol {}
+extension MindTask: TaskProtocol {}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
