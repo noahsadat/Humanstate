@@ -28,7 +28,6 @@ struct BodyTasksView: View {
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal)
-                .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
             }
             
             // Pagination Dots

@@ -58,7 +58,7 @@ struct ContentView: View {
     private var headerView: some View {
         HStack {
             Text(headerTitle)
-                .font(.largeTitle)
+                .font(.title)
                 .fontWeight(.bold)
             Spacer()
             NavigationLink(destination: ProfileView()) {

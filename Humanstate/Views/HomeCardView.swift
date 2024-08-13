@@ -9,7 +9,7 @@ struct CardView: View {
     var isReversed: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.title2)
                 .fontWeight(.bold)

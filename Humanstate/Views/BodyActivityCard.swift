@@ -14,7 +14,7 @@ struct BodyActivityCard: View {
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(activity)
                     .font(.title2)
