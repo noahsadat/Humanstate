@@ -167,6 +167,7 @@ struct BodyActivityCard: View {
                     modelContext.delete(existingTask)
                 } else {
                     existingTask.dailyGoal = amount
+                    existingTask.lastModifiedAt = Date()  // Update the lastModifiedAt timestamp
                 }
             } else if amount > 0 {
                 let newTask = BodyTask(name: exerciseName, dailyGoal: amount)
