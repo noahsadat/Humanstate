@@ -1,9 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct BodyTasksView: View {
-    @Binding var tasks: [BodyTask]
+    @Query private var tasks: [BodyTask]
     @Binding var availableExercises: [BodyExercise]
     @State private var currentTaskIndex: Int = 0
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         VStack(spacing: 15) {
@@ -19,7 +21,7 @@ struct BodyTasksView: View {
             
             // Task Content
             if !incompleteTasks.isEmpty {
-                BodyTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
+                BodyTaskView(task: incompleteTasks[currentTaskIndex], availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
                     Text("All tasks completed!")
@@ -60,13 +62,6 @@ struct BodyTasksView: View {
         tasks.filter { !$0.completed }
     }
     
-    private func binding(for task: BodyTask) -> Binding<BodyTask> {
-        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
-            fatalError("Task not found")
-        }
-        return $tasks[index]
-    }
-    
     private func handleTaskCompletion(taskId: UUID) {
         if let index = tasks.firstIndex(where: { $0.id == taskId }) {
             tasks[index].completed = true
@@ -82,19 +77,12 @@ struct BodyTasksView: View {
     }
 }
 
-struct BodyTask: Identifiable {
-    let id = UUID()
-    let name: String
-    var dailyGoal: Int
-    var count: Int = 0
-    var completed: Bool = false
-}
-
 struct BodyTaskView: View {
-    @Binding var task: BodyTask
+    @Bindable var task: BodyTask
     let availableExercises: [BodyExercise]
     var onTaskCompleted: (UUID) -> Void
     @State private var showingWellDone: Bool = false
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         VStack(spacing: 0) {

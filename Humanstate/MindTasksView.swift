@@ -1,9 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct MindTasksView: View {
-    @Binding var tasks: [MindTask]
+    @Query private var tasks: [MindTask]
     @Binding var availableExercises: [MindExercise]
     @State private var currentTaskIndex: Int = 0
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         VStack(spacing: 15) {
@@ -19,7 +21,7 @@ struct MindTasksView: View {
             
             // Task Content
             if !incompleteTasks.isEmpty {
-                MindTaskView(task: binding(for: incompleteTasks[currentTaskIndex]), availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
+                MindTaskView(task: incompleteTasks[currentTaskIndex], availableExercises: availableExercises, onTaskCompleted: handleTaskCompletion)
             } else {
                 VStack {
                     Text("All tasks completed!")
@@ -60,13 +62,6 @@ struct MindTasksView: View {
         tasks.filter { !$0.completed }
     }
     
-    private func binding(for task: MindTask) -> Binding<MindTask> {
-        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else {
-            fatalError("Task not found")
-        }
-        return $tasks[index]
-    }
-    
     private func handleTaskCompletion(taskId: UUID) {
         if let index = tasks.firstIndex(where: { $0.id == taskId }) {
             tasks[index].completed = true
@@ -82,19 +77,12 @@ struct MindTasksView: View {
     }
 }
 
-struct MindTask: Identifiable {
-    let id = UUID()
-    let name: String
-    var dailyGoal: Int
-    var count: Int = 0
-    var completed: Bool = false
-}
-
 struct MindTaskView: View {
-    @Binding var task: MindTask
+    @Bindable var task: MindTask
     let availableExercises: [MindExercise]
     var onTaskCompleted: (UUID) -> Void
     @State private var showingWellDone: Bool = false
+    @Environment(\.modelContext) private var modelContext
     
     private var exercise: MindExercise? {
         availableExercises.first(where: { $0.name == task.name })

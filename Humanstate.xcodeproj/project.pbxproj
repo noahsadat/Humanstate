@@ -6,6 +6,10 @@
 	objectVersion = 70;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2FE42A662C6A7C6800D67F44 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE42A652C6A7C6800D67F44 /* SwiftData.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2F476B1F2C5264DF008E2369 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		2F476B0E2C5264DD008E2369 /* Humanstate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Humanstate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F476B1E2C5264DF008E2369 /* HumanstateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumanstateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F476B282C5264DF008E2369 /* HumanstateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumanstateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FE42A652C6A7C6800D67F44 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 				MindView.swift,
 				"Preview Content/Preview Assets.xcassets",
 				ProfileView.swift,
+				SwiftDataModels/TaskModels.swift,
 				Views/BodyActivityCard.swift,
 				Views/HomeCardView.swift,
 				Views/MindActivityCard.swift,
@@ -64,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FE42A662C6A7C6800D67F44 /* SwiftData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +98,7 @@
 				2F476B212C5264DF008E2369 /* HumanstateTests */,
 				2F476B2B2C5264DF008E2369 /* HumanstateUITests */,
 				2F476B0F2C5264DD008E2369 /* Products */,
+				2FE42A642C6A7C6800D67F44 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -102,6 +110,14 @@
 				2F476B282C5264DF008E2369 /* HumanstateUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2FE42A642C6A7C6800D67F44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2FE42A652C6A7C6800D67F44 /* SwiftData.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

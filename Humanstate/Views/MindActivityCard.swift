@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MindActivityCard: View {
     let activity: String
@@ -8,8 +9,9 @@ struct MindActivityCard: View {
     @State private var selectedMindExercise: String = "Meditation"
     @State private var selectedAmount: Int = 5
     @State private var pendingChanges: [String: Int] = [:]
-    @Binding var tasks: [MindTask]
+    @Query var tasks: [MindTask]
     @Binding var availableExercises: [MindExercise]
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -160,15 +162,15 @@ struct MindActivityCard: View {
     
     private func saveAllTasks() {
         for (exerciseName, amount) in pendingChanges {
-            if let index = tasks.firstIndex(where: { $0.name == exerciseName }) {
+            if let existingTask = tasks.first(where: { $0.name == exerciseName }) {
                 if amount == 0 {
-                    tasks.remove(at: index)
+                    modelContext.delete(existingTask)
                 } else {
-                    tasks[index].dailyGoal = amount
+                    existingTask.dailyGoal = amount
                 }
             } else if amount > 0 {
                 let newTask = MindTask(name: exerciseName, dailyGoal: amount)
-                tasks.append(newTask)
+                modelContext.insert(newTask)
             }
         }
         pendingChanges.removeAll()

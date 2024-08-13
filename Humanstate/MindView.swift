@@ -1,15 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct MindView: View {
-    @State private var tasks: [MindTask] = []
+    @Query private var tasks: [MindTask]
     @State private var availableExercises: [MindExercise] = MindExercises.all
     
     var body: some View {
         VStack(spacing: 20) {
-            MindActivityCard(activity: "Read", completed: 8, total: 10, tasks: $tasks, availableExercises: $availableExercises)
-            MindActivityCard(activity: "Exercise", completed: 3, total: 10, tasks: $tasks, availableExercises: $availableExercises)
-            MindActivityCard(activity: "Nutrition", completed: 5, total: 10, tasks: $tasks, availableExercises: $availableExercises)
-            MindTasksView(tasks: $tasks, availableExercises: $availableExercises)
+            MindActivityCard(activity: "Read", completed: 8, total: 10, availableExercises: $availableExercises)
+            MindActivityCard(activity: "Exercise", completed: 3, total: 10, availableExercises: $availableExercises)
+            MindActivityCard(activity: "Nutrition", completed: 5, total: 10, availableExercises: $availableExercises)
+            MindTasksView(availableExercises: $availableExercises)
             Spacer()
         }
         .padding(.horizontal)

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @State private var selectedTab: Int = 1
@@ -52,6 +53,7 @@ struct ContentView: View {
             }
             .navigationBarHidden(true)
         }
+        .modelContainer(for: [BodyTask.self, MindTask.self])
     }
     
     private var headerView: some View {
