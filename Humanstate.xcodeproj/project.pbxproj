@@ -39,21 +39,21 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
-				BodyTasksView.swift,
-				BodyView.swift,
-				ContentView.swift,
-				CustomTabView.swift,
+				Cards/BodyActivityCard.swift,
+				Cards/HomeCardView.swift,
+				Cards/MindActivityCard.swift,
 				ExerciseViews/BodyExercises.swift,
 				ExerciseViews/MindExercises.swift,
 				HumanstateApp.swift,
-				MindTasksView.swift,
-				MindView.swift,
 				"Preview Content/Preview Assets.xcassets",
-				ProfileView.swift,
 				SwiftDataModels/TaskModels.swift,
-				Views/BodyActivityCard.swift,
-				Views/HomeCardView.swift,
-				Views/MindActivityCard.swift,
+				Views/BodyTasksView.swift,
+				Views/BodyView.swift,
+				Views/ContentView.swift,
+				Views/CustomTabView.swift,
+				Views/MindTasksView.swift,
+				Views/MindView.swift,
+				Views/ProfileView.swift,
 			);
 			target = 2F476B0D2C5264DD008E2369 /* Humanstate */;
 		};

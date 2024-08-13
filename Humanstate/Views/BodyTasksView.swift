@@ -116,11 +116,16 @@ struct BodyTaskView: View {
                         .foregroundColor(.green)
                         .transition(.opacity)
                 } else {
-                    Text(String(format: "%02d/%02d", task.count, task.dailyGoal))
-                        .font(.system(size: 40, weight: .bold, design: .default))
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .foregroundColor(.primary)
+                    VStack {
+                        Text(String(format: "%02d/%02d", task.count, task.dailyGoal))
+                            .font(.system(size: 40, weight: .bold, design: .default))
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                            .foregroundColor(.primary)
+                        Text(availableExercises.first(where: { $0.name == task.name })?.countingUnit ?? "")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 Spacer()
