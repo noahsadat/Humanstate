@@ -66,6 +66,13 @@ struct MindTasksView: View {
         if let index = tasks.firstIndex(where: { $0.id == taskId }) {
             tasks[index].completed = true
             tasks[index].count = 0
+            tasks[index].lastModifiedAt = Date()
+            
+            do {
+                try modelContext.save()
+            } catch {
+                print("Failed to save task completion: \(error)")
+            }
             
             // Move to the next incomplete task or reset to the first one if all are completed
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -99,6 +106,7 @@ struct MindTaskView: View {
                 Button(action: {
                     let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
                     task.count = max(0, task.count - step)
+                    saveChanges()
                 }) {
                     Image(systemName: "minus.circle")
                         .imageScale(.large)
@@ -131,6 +139,7 @@ struct MindTaskView: View {
                     if !task.completed {
                         let step = availableExercises.first(where: { $0.name == task.name })?.countingStep ?? 1
                         task.count = min(task.dailyGoal, task.count + step)
+                        saveChanges()
                         checkCompletion()
                     }
                 }) {
@@ -157,8 +166,18 @@ struct MindTaskView: View {
                     showingWellDone = false
                     task.completed = true
                 }
+                saveChanges()
                 onTaskCompleted(task.id)
             }
+        }
+    }
+    
+    private func saveChanges() {
+        task.lastModifiedAt = Date()
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save task changes: \(error)")
         }
     }
 }

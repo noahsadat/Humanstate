@@ -6,8 +6,8 @@ struct ContentView: View {
     @State private var headerTitle: String = "Humanstate"
     @Environment(\.colorScheme) private var colorScheme
     
-    @State private var bodyExerciseTasks: [BodyTask] = []
-    @State private var mindExerciseTasks: [MindTask] = []
+    @Query private var bodyTasks: [BodyTask]
+    @Query private var mindTasks: [MindTask]
     
     private let tabViewOffset: CGFloat = 20
     
@@ -26,7 +26,7 @@ struct ContentView: View {
                 }
                 
                 VStack {
-                    Spacer().frame(height: 100) // Adjust this value to position the content correctly
+                    Spacer().frame(height: 100)
                     
                     Group {
                         if selectedTab == 0 {
@@ -53,7 +53,6 @@ struct ContentView: View {
             }
             .navigationBarHidden(true)
         }
-        .modelContainer(for: [BodyTask.self, MindTask.self])
     }
     
     private var headerView: some View {
@@ -79,7 +78,7 @@ struct ContentView: View {
                 title: "Body",
                 progress: 56,
                 readProgress: 0.5,
-                exerciseProgress: calculateExerciseProgress(bodyExerciseTasks),
+                exerciseProgress: calculateExerciseProgress(bodyTasks),
                 nutritionProgress: 0.4
             )
             
@@ -87,18 +86,19 @@ struct ContentView: View {
                 title: "Mind",
                 progress: 50,
                 readProgress: 0.4,
-                exerciseProgress: calculateExerciseProgress(mindExerciseTasks),
+                exerciseProgress: calculateExerciseProgress(mindTasks),
                 nutritionProgress: 0.6,
                 isReversed: true
             )
 
             HStack(spacing: 20) {
+                // Add any additional content here if needed
             }
         }
         .padding(.horizontal)
     }
     
-    private func calculateExerciseProgress<T: TaskProtocol>(_ tasks: [T]) -> CGFloat {
+    private func calculateExerciseProgress(_ tasks: [any TaskProtocol]) -> CGFloat {
         let completedTasks = tasks.filter { $0.completed }.count
         return tasks.isEmpty ? 0 : CGFloat(completedTasks) / CGFloat(tasks.count)
     }
@@ -111,8 +111,7 @@ protocol TaskProtocol {
 extension BodyTask: TaskProtocol {}
 extension MindTask: TaskProtocol {}
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
+        .modelContainer(for: [BodyTask.self, MindTask.self])
 }

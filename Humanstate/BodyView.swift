@@ -8,7 +8,7 @@ struct BodyView: View {
     var body: some View {
         VStack(spacing: 20) {
             BodyActivityCard(activity: "Read", completed: 8, total: 10, availableExercises: $availableExercises)
-            BodyActivityCard(activity: "Exercise", completed: 3, total: 10, availableExercises: $availableExercises)
+            BodyActivityCard(activity: "Exercise", completed: tasks.filter { $0.completed }.count, total: tasks.count, availableExercises: $availableExercises)
             BodyActivityCard(activity: "Nutrition", completed: 5, total: 10, availableExercises: $availableExercises)
             BodyTasksView(availableExercises: $availableExercises)
             Spacer()
