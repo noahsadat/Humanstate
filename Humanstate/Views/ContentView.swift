@@ -5,9 +5,13 @@ struct ContentView: View {
     @State private var selectedTab: Int = 1
     @State private var headerTitle: String = "Humanstate"
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.modelContext) private var modelContext
     
     @Query private var bodyTasks: [BodyTask]
     @Query private var mindTasks: [MindTask]
+    
+    @State private var refreshID = UUID()
     
     private let tabViewOffset: CGFloat = 20
     
@@ -52,6 +56,12 @@ struct ContentView: View {
                 }
             }
             .navigationBarHidden(true)
+        }
+        .id(refreshID)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
+                refreshTasks()
+            }
         }
     }
     
@@ -102,10 +112,41 @@ struct ContentView: View {
         let completedTasks = tasks.filter { $0.completed }.count
         return tasks.isEmpty ? 0 : CGFloat(completedTasks) / CGFloat(tasks.count)
     }
+    
+    private func refreshTasks() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        for task in bodyTasks {
+            if let lastCompletionDate = task.lastCompletionDate,
+               !calendar.isDate(lastCompletionDate, inSameDayAs: today) {
+                task.completed = false
+                task.count = 0
+                task.lastModifiedAt = Date()
+            }
+        }
+        
+        for task in mindTasks {
+            if let lastCompletionDate = task.lastCompletionDate,
+               !calendar.isDate(lastCompletionDate, inSameDayAs: today) {
+                task.completed = false
+                task.count = 0
+                task.lastModifiedAt = Date()
+            }
+        }
+        
+        do {
+            try modelContext.save()
+            refreshID = UUID() // This will force a refresh of the entire view
+        } catch {
+            print("Failed to refresh tasks: \(error)")
+        }
+    }
 }
 
 protocol TaskProtocol {
     var completed: Bool { get }
+    var lastCompletionDate: Date? { get }
 }
 
 extension BodyTask: TaskProtocol {}
