@@ -10,8 +10,9 @@ final class BodyTask {
     var completed: Bool
     var createdAt: Date
     var lastModifiedAt: Date
+    var lastCompletionDate: Date?
     
-    init(id: UUID = UUID(), name: String, dailyGoal: Int, count: Int = 0, completed: Bool = false, createdAt: Date = Date(), lastModifiedAt: Date = Date()) {
+    init(id: UUID = UUID(), name: String, dailyGoal: Int, count: Int = 0, completed: Bool = false, createdAt: Date = Date(), lastModifiedAt: Date = Date(), lastCompletionDate: Date? = nil) {
         self.id = id
         self.name = name
         self.dailyGoal = dailyGoal
@@ -19,6 +20,7 @@ final class BodyTask {
         self.completed = completed
         self.createdAt = createdAt
         self.lastModifiedAt = lastModifiedAt
+        self.lastCompletionDate = lastCompletionDate
     }
 }
 
@@ -31,8 +33,9 @@ final class MindTask {
     var completed: Bool
     var createdAt: Date
     var lastModifiedAt: Date
+    var lastCompletionDate: Date?
     
-    init(id: UUID = UUID(), name: String, dailyGoal: Int, count: Int = 0, completed: Bool = false, createdAt: Date = Date(), lastModifiedAt: Date = Date()) {
+    init(id: UUID = UUID(), name: String, dailyGoal: Int, count: Int = 0, completed: Bool = false, createdAt: Date = Date(), lastModifiedAt: Date = Date(), lastCompletionDate: Date? = nil) {
         self.id = id
         self.name = name
         self.dailyGoal = dailyGoal
@@ -40,5 +43,6 @@ final class MindTask {
         self.completed = completed
         self.createdAt = createdAt
         self.lastModifiedAt = lastModifiedAt
+        self.lastCompletionDate = lastCompletionDate
     }
 }

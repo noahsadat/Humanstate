@@ -55,10 +55,33 @@ struct BodyTasksView: View {
                     }
                 }
         )
+        .onAppear {
+            resetTasksIfNewDay()
+        }
     }
     
     private var incompleteTasks: [BodyTask] {
         tasks.filter { !$0.completed }
+    }
+    
+    private func resetTasksIfNewDay() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        for task in tasks {
+            if let lastCompletionDate = task.lastCompletionDate,
+               !calendar.isDate(lastCompletionDate, inSameDayAs: today) {
+                task.completed = false
+                task.count = 0
+                task.lastModifiedAt = Date()
+            }
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to reset tasks: \(error)")
+        }
     }
     
     private func handleTaskCompletion(taskId: UUID) {
@@ -66,6 +89,7 @@ struct BodyTasksView: View {
             tasks[index].completed = true
             tasks[index].count = 0
             tasks[index].lastModifiedAt = Date()
+            tasks[index].lastCompletionDate = Date()
             
             do {
                 try modelContext.save()
