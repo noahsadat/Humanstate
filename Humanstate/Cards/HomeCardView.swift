@@ -45,29 +45,29 @@ struct ProgressCircle: View {
         ZStack {
             Circle()
                 .trim(from: 0.0, to: 1.0)
-                .stroke(Color.secondary.opacity(0.2), lineWidth: 20)
-                .frame(width: 120, height: 120)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 15)
+                .frame(width: 90, height: 90)
             
             Circle()
                 .trim(from: 0.0, to: readProgress / 3)
-                .stroke(Color.blue, lineWidth: 20)
+                .stroke(Color.blue, lineWidth: 15)
                 .rotationEffect(Angle(degrees: -90))
-                .frame(width: 120, height: 120)
+                .frame(width: 90, height: 90)
             
             Circle()
                 .trim(from: 1 / 3, to: 1 / 3 + exerciseProgress / 3)
-                .stroke(Color.green, lineWidth: 20)
+                .stroke(Color.green, lineWidth: 15)
                 .rotationEffect(Angle(degrees: -90))
-                .frame(width: 120, height: 120)
+                .frame(width: 90, height: 90)
             
             Circle()
                 .trim(from: 2 / 3, to: 2 / 3 + nutritionProgress / 3)
-                .stroke(Color.orange, lineWidth: 20)
+                .stroke(Color.orange, lineWidth: 15)
                 .rotationEffect(Angle(degrees: -90))
-                .frame(width: 120, height: 120)
+                .frame(width: 90, height: 90)
             
             Text("\(progress)%")
-                .font(.system(.title, design: .rounded).weight(.bold))
+                .font(.system(.title2, design: .rounded).weight(.bold))
                 .foregroundColor(.primary)
         }
         .padding()

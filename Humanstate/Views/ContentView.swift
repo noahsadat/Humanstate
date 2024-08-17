@@ -12,6 +12,8 @@ struct ContentView: View {
     @Query private var mindTasks: [MindTask]
     
     @State private var refreshID = UUID()
+    @State private var availableBodyExercises: [BodyExercise] = BodyExercises.all
+    @State private var availableMindExercises: [MindExercise] = MindExercises.all
     
     private let tabViewOffset: CGFloat = 20
     
@@ -104,6 +106,11 @@ struct ContentView: View {
                 nutritionProgress: 0.6,
                 isReversed: true
             )
+            
+            CombinedTasksView(
+                                availableBodyExercises: $availableBodyExercises,
+                                availableMindExercises: $availableMindExercises
+                            )
 
             HStack(spacing: 20) {
                 // Add any additional content here if needed

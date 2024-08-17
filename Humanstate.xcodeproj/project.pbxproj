@@ -47,6 +47,7 @@
 				HumanstateApp.swift,
 				"Preview Content/Preview Assets.xcassets",
 				SwiftDataModels/TaskModels.swift,
+				Views/AllTasksView.swift,
 				Views/BodyTasksView.swift,
 				Views/BodyView.swift,
 				Views/ContentView.swift,
