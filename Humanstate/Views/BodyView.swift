@@ -24,7 +24,6 @@ struct BodyView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            .padding(.top, 20)
         }
     }
 }

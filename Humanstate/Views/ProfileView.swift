@@ -7,51 +7,59 @@ struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                HStack {
-                    Text("Profile")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.top)
-                
-                // Profile Fields
+        ZStack {
+            DottedBackgroundView(
+                dotColor: Color.gray.opacity(0.3),
+                animatedDotColor: .blue.opacity(1),
+                backgroundColor: Color(UIColor.systemGroupedBackground)
+            )
+            .ignoresSafeArea()
+            
+            ScrollView {
                 VStack(spacing: 20) {
-                    ProfileField(title: "Username", text: $username, placeholder: "Enter username")
-                    ProfileField(title: "Full Name", text: $fullName, placeholder: "Enter full name")
-                    ProfileField(title: "Email", text: $email, placeholder: "Enter email")
-                        .keyboardType(.emailAddress)
+                    // Header
+                    HStack {
+                        Text("Profile")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top)
+                    
+                    // Profile Fields
+                    VStack(spacing: 20) {
+                        ProfileField(title: "Username", text: $username, placeholder: "Enter username")
+                        ProfileField(title: "Full Name", text: $fullName, placeholder: "Enter full name")
+                        ProfileField(title: "Email", text: $email, placeholder: "Enter email")
+                            .keyboardType(.emailAddress)
+                    }
+                    .padding()
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                    .cornerRadius(15)
+                    
+                    // Actions
+                    VStack(spacing: 15) {
+                        Button(action: {
+                            // Action for change password
+                        }) {
+                            Text("Change Password")
+                        }
+                        .buttonStyle(ProfileButtonStyle())
+                        
+                        Button(action: {
+                            // Action for delete account
+                        }) {
+                            Text("Delete Account")
+                        }
+                        .buttonStyle(ProfileButtonStyle(color: .red))
+                        .disabled(true)
+                    }
+                    .padding(.top)
                 }
                 .padding()
-                .background(Color(UIColor.secondarySystemGroupedBackground))
-                .cornerRadius(15)
-                
-                // Actions
-                VStack(spacing: 15) {
-                    Button(action: {
-                        // Action for change password
-                    }) {
-                        Text("Change Password")
-                    }
-                    .buttonStyle(ProfileButtonStyle())
-                    
-                    Button(action: {
-                        // Action for delete account
-                    }) {
-                        Text("Delete Account")
-                    }
-                    .buttonStyle(ProfileButtonStyle(color: .red))
-                    .disabled(true)
-                }
-                .padding(.top)
             }
-            .padding()
         }
-        .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -63,6 +71,9 @@ struct ProfileView: View {
         }
     }
 }
+
+// Rest of the code (ProfileField, ProfileButtonStyle, and ProfileView_Previews) remains unchanged
+
 
 struct ProfileField: View {
     let title: String
