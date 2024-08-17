@@ -9,8 +9,8 @@ struct MindView: View {
         ZStack {
             // Animated dotted background
             DottedBackgroundView(
-                dotColor: Color.gray.opacity(0.3),
-                animatedDotColor: .blue.opacity(1),
+                dotColor: Color.white.opacity(0.3),
+                animatedDotColor: .gray.opacity(1),
                 backgroundColor: Color(UIColor.systemGroupedBackground)
             )
             .edgesIgnoringSafeArea(.all)

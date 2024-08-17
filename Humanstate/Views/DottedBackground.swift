@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct DottedBackgroundView: View {
-    let dotSize: CGFloat = 1
-    let dotSpacing: CGFloat = 10
+    let dotSize: CGFloat = 2
+    let dotSpacing: CGFloat = 3
     let dotColor: Color
     let animatedDotColor: Color
     let backgroundColor: Color
@@ -46,7 +46,7 @@ struct DottedBackgroundView: View {
     
     private func startAnimation() {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.5)) {
+            withAnimation(.easeInOut(duration: 0.9)) {
                 let columns = Int(UIScreen.main.bounds.width / dotSpacing)
                 let rows = Int(UIScreen.main.bounds.height / dotSpacing)
                 
@@ -54,7 +54,7 @@ struct DottedBackgroundView: View {
                 animatedDots = animatedDots.filter { _ in Bool.random() }
                 
                 // Add new animated dots
-                let newDotsCount = Int.random(in: 1...10)
+                let newDotsCount = Int.random(in: 1...20)
                 for _ in 0..<newDotsCount {
                     let x = Int.random(in: 0..<columns)
                     let y = Int.random(in: 0..<rows)
