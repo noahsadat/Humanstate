@@ -51,6 +51,7 @@
 				Views/BodyView.swift,
 				Views/ContentView.swift,
 				Views/CustomTabView.swift,
+				Views/DottedBackground.swift,
 				Views/MindTasksView.swift,
 				Views/MindView.swift,
 				Views/ProfileView.swift,

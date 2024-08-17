@@ -16,9 +16,13 @@ struct ContentView: View {
     private let tabViewOffset: CGFloat = 20
     
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                Color(uiColor: .systemGroupedBackground)
+            NavigationStack {
+                ZStack(alignment: .top) {
+                    DottedBackgroundView(
+                        dotColor: Color.gray.opacity(0.3),
+                        animatedDotColor: .blue.opacity(1),
+                        backgroundColor: Color(uiColor: .systemGroupedBackground)
+                    )
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
@@ -156,3 +160,5 @@ extension MindTask: TaskProtocol {}
     ContentView()
         .modelContainer(for: [BodyTask.self, MindTask.self])
 }
+
+
