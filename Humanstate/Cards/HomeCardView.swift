@@ -46,7 +46,7 @@ struct ProgressCircle: View {
             Circle()
                 .trim(from: 0.0, to: 1.0)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 15)
-                .frame(width: 90, height: 90)
+                .frame(width: 70, height: 70)
             
             Circle()
                 .trim(from: 0.0, to: readProgress / 3)
@@ -67,7 +67,7 @@ struct ProgressCircle: View {
                 .frame(width: 90, height: 90)
             
             Text("\(progress)%")
-                .font(.system(.title2, design: .rounded).weight(.bold))
+                .font(.system(.title3, design: .rounded).weight(.bold))
                 .foregroundColor(.primary)
         }
         .padding()

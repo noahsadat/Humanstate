@@ -93,17 +93,17 @@ struct ContentView: View {
             CardView(
                 title: "Body",
                 progress: 56,
-                readProgress: 0.5,
+                readProgress: 1,
                 exerciseProgress: calculateExerciseProgress(bodyTasks),
-                nutritionProgress: 0.4
+                nutritionProgress: 1
             )
             
             CardView(
                 title: "Mind",
                 progress: 50,
-                readProgress: 0.4,
+                readProgress: 1,
                 exerciseProgress: calculateExerciseProgress(mindTasks),
-                nutritionProgress: 0.6,
+                nutritionProgress: 1,
                 isReversed: true
             )
             
