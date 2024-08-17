@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct CombinedTasksView: View {
+struct AllTasksView: View {
     @Query private var bodyTasks: [BodyTask]
     @Query private var mindTasks: [MindTask]
     @State private var selectedTaskType: TaskType = .body

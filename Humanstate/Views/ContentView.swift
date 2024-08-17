@@ -107,7 +107,7 @@ struct ContentView: View {
                 isReversed: true
             )
             
-            CombinedTasksView(
+            AllTasksView(
                                 availableBodyExercises: $availableBodyExercises,
                                 availableMindExercises: $availableMindExercises
                             )
