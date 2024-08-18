@@ -6,7 +6,7 @@ struct MindView: View {
     @State private var availableExercises: [MindExercise] = MindExercises.all
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(alignment: .leading, spacing: 20) {
             MindActivityCard(activity: "Read", completed: 8, total: 10, availableExercises: $availableExercises)
             MindActivityCard(activity: "Exercise", completed: tasks.filter { $0.completed }.count, total: tasks.count, availableExercises: $availableExercises)
             MindActivityCard(activity: "Nutrition", completed: 5, total: 10, availableExercises: $availableExercises)

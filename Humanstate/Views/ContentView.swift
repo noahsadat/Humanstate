@@ -15,59 +15,76 @@ struct ContentView: View {
     @State private var availableBodyExercises: [BodyExercise] = BodyExercises.all
     @State private var availableMindExercises: [MindExercise] = MindExercises.all
     
+    @State private var contentOffset: CGFloat = 0
+    
     private let tabViewOffset: CGFloat = 20
+    private let headerToContentPadding: CGFloat = 20
     
     var body: some View {
-            NavigationStack {
-                ZStack(alignment: .top) {
-                    DottedBackgroundView(
-                        dotColor: Color.white.opacity(0.3),
-                        animatedDotColor: .gray.opacity(1),
-                        backgroundColor: Color(uiColor: .systemGroupedBackground)
-                    )
-                    .ignoresSafeArea()
-
-                    VStack(spacing: 0) {
-                        headerView
-                            .padding(.horizontal)
-                            .padding(.top)
-                        
-                        Spacer()
-                    }
+        NavigationStack {
+            ZStack(alignment: .top) {
+                DottedBackgroundView(
+                    dotColor: Color.white.opacity(0.3),
+                    animatedDotColor: .gray.opacity(1),
+                    backgroundColor: Color(uiColor: .systemGroupedBackground)
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    headerView
+                        .padding(.horizontal)
+                        .padding(.top)
                     
-                    VStack {
-                        Spacer().frame(height: 100)
-                        
-                        Group {
-                            if selectedTab == 0 {
-                                BodyView()
-                                    .onAppear { headerTitle = "Bodystate" }
-                            } else if selectedTab == 1 {
-                                homeContent
-                                    .onAppear { headerTitle = "Humanstate" }
-                            } else if selectedTab == 2 {
-                                MindView()
-                                    .onAppear { headerTitle = "Mindstate" }
-                            }
+                    GeometryReader { geometry in
+                        HStack(spacing: 0) {
+                            BodyView()
+                                .frame(width: geometry.size.width)
+                            homeContent
+                                .frame(width: geometry.size.width)
+                            MindView()
+                                .frame(width: geometry.size.width)
                         }
-                        
-                        Spacer()
+                        .offset(x: -CGFloat(selectedTab) * geometry.size.width + contentOffset)
+                        .animation(.interactiveSpring(), value: selectedTab)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    contentOffset = gesture.translation.width
+                                }
+                                .onEnded { gesture in
+                                    let predictedEndOffset = gesture.predictedEndTranslation.width
+                                    let threshold = geometry.size.width * 0.3
+                                    
+                                    if abs(predictedEndOffset) > threshold {
+                                        if predictedEndOffset > 0 {
+                                            selectedTab = max(0, selectedTab - 1)
+                                        } else {
+                                            selectedTab = min(2, selectedTab + 1)
+                                        }
+                                    }
+                                    
+                                    contentOffset = 0
+                                }
+                        )
                     }
+                    .padding(.top, headerToContentPadding)
                     
-                    VStack {
-                        Spacer()
-                        CustomTabView(selectedTab: $selectedTab)
-                            .padding(.horizontal)
-                            .padding(.bottom, -tabViewOffset)
-                    }
+                    Spacer()
+                    
+                    CustomTabView(selectedTab: $selectedTab)
+                        .padding(.horizontal)
+                        .padding(.bottom, -tabViewOffset)
                 }
-                .navigationBarHidden(true)
             }
+            .navigationBarHidden(true)
+        }
         .id(refreshID)
-        .onChange(of: scenePhase) { oldPhase, newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 refreshTasks()
             }
+        }
+        .onChange(of: selectedTab) { _, _ in
         }
     }
     
@@ -89,35 +106,34 @@ struct ContentView: View {
     }
     
     private var homeContent: some View {
-        VStack(spacing: 20) {
-            CardView(
-                title: "Body",
-                progress: 56,
-                readProgress: 1,
-                exerciseProgress: calculateExerciseProgress(bodyTasks),
-                nutritionProgress: 1
-            )
-            
-            CardView(
-                title: "Mind",
-                progress: 50,
-                readProgress: 1,
-                exerciseProgress: calculateExerciseProgress(mindTasks),
-                nutritionProgress: 1,
-                isReversed: true
-            )
-            
-            AllTasksView(
-                                availableBodyExercises: $availableBodyExercises,
-                                availableMindExercises: $availableMindExercises
-                            )
-
-            HStack(spacing: 20) {
-                // Add any additional content here if needed
+            VStack(alignment: .leading, spacing: 20) {
+                CardView(
+                    title: "Body",
+                    progress: 56,
+                    readProgress: 1,
+                    exerciseProgress: calculateExerciseProgress(bodyTasks),
+                    nutritionProgress: 1
+                )
+                
+                CardView(
+                    title: "Mind",
+                    progress: 50,
+                    readProgress: 1,
+                    exerciseProgress: calculateExerciseProgress(mindTasks),
+                    nutritionProgress: 1,
+                    isReversed: true
+                )
+                
+                AllTasksView(
+                    availableBodyExercises: $availableBodyExercises,
+                    availableMindExercises: $availableMindExercises
+                )
+                
+                Spacer()
             }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
-    }
+
     
     private func calculateExerciseProgress(_ tasks: [any TaskProtocol]) -> CGFloat {
         let completedTasks = tasks.filter { $0.completed }.count
