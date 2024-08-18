@@ -17,31 +17,36 @@ struct DottedBackgroundView: View {
     @State private var animatedDots: [(Int, Int, Bool)] = []
     
     var body: some View {
-        GeometryReader { geometry in
-            backgroundColor
-                .overlay(
-                    Canvas { context, size in
-                        let columns = Int(size.width / dotSpacing)
-                        let rows = Int(size.height / dotSpacing)
-                        
-                        for x in 0..<columns {
-                            for y in 0..<rows {
-                                let point = CGPoint(x: CGFloat(x) * dotSpacing, y: CGFloat(y) * dotSpacing)
-                                let rect = CGRect(origin: point, size: CGSize(width: dotSize, height: dotSize))
-                                
-                                if animatedDots.contains(where: { $0.0 == x && $0.1 == y && $0.2 }) {
-                                    context.fill(Path(ellipseIn: rect), with: .color(animatedDotColor))
-                                } else {
-                                    context.fill(Path(ellipseIn: rect), with: .color(dotColor))
-                                }
+        let screenWidth = UIScreen.main.bounds.width
+        let screenHeight = UIScreen.main.bounds.height
+
+        return backgroundColor
+            .ignoresSafeArea() // Ensure the background color ignores the safe area
+            .overlay(
+                Canvas { context, _ in
+                    let columns = Int(screenWidth / dotSpacing)
+                    let rows = Int(screenHeight / dotSpacing)
+
+                    for x in 0..<columns {
+                        for y in 0..<rows {
+                            let point = CGPoint(x: CGFloat(x) * dotSpacing, y: CGFloat(y) * dotSpacing)
+                            let rect = CGRect(origin: point, size: CGSize(width: dotSize, height: dotSize))
+
+                            if animatedDots.contains(where: { $0.0 == x && $0.1 == y && $0.2 }) {
+                                context.fill(Path(ellipseIn: rect), with: .color(animatedDotColor))
+                            } else {
+                                context.fill(Path(ellipseIn: rect), with: .color(dotColor))
                             }
                         }
                     }
-                )
-        }
-        .onAppear {
-            startAnimation()
-        }
+                }
+                .frame(width: screenWidth, height: screenHeight)
+                , alignment: .topLeading
+            )
+            .ignoresSafeArea() // Also ensure the overlay ignores the safe area
+            .onAppear {
+                startAnimation()
+            }
     }
     
     private func startAnimation() {

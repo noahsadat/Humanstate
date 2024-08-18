@@ -26,43 +26,43 @@ struct ContentView: View {
                         backgroundColor: Color(uiColor: .systemGroupedBackground)
                     )
                     .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    headerView
-                        .padding(.horizontal)
-                        .padding(.top)
-                    
-                    Spacer()
-                }
-                
-                VStack {
-                    Spacer().frame(height: 100)
-                    
-                    Group {
-                        if selectedTab == 0 {
-                            BodyView()
-                                .onAppear { headerTitle = "Bodystate" }
-                        } else if selectedTab == 1 {
-                            homeContent
-                                .onAppear { headerTitle = "Humanstate" }
-                        } else if selectedTab == 2 {
-                            MindView()
-                                .onAppear { headerTitle = "Mindstate" }
-                        }
+
+                    VStack(spacing: 0) {
+                        headerView
+                            .padding(.horizontal)
+                            .padding(.top)
+                        
+                        Spacer()
                     }
                     
-                    Spacer()
+                    VStack {
+                        Spacer().frame(height: 100)
+                        
+                        Group {
+                            if selectedTab == 0 {
+                                BodyView()
+                                    .onAppear { headerTitle = "Bodystate" }
+                            } else if selectedTab == 1 {
+                                homeContent
+                                    .onAppear { headerTitle = "Humanstate" }
+                            } else if selectedTab == 2 {
+                                MindView()
+                                    .onAppear { headerTitle = "Mindstate" }
+                            }
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    VStack {
+                        Spacer()
+                        CustomTabView(selectedTab: $selectedTab)
+                            .padding(.horizontal)
+                            .padding(.bottom, -tabViewOffset)
+                    }
                 }
-                
-                VStack {
-                    Spacer()
-                    CustomTabView(selectedTab: $selectedTab)
-                        .padding(.horizontal)
-                        .padding(.bottom, -tabViewOffset)
-                }
+                .navigationBarHidden(true)
             }
-            .navigationBarHidden(true)
-        }
         .id(refreshID)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {

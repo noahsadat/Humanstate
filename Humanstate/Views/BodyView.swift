@@ -6,25 +6,14 @@ struct BodyView: View {
     @State private var availableExercises: [BodyExercise] = BodyExercises.all
     
     var body: some View {
-        ZStack {
-            // Animated dotted background
-            DottedBackgroundView(
-                dotColor: Color.white.opacity(0.3),
-                animatedDotColor: .gray.opacity(1),
-                backgroundColor: Color(UIColor.systemGroupedBackground)
-            )
-            .edgesIgnoringSafeArea(.all)
-            
-            // Existing content
-            VStack(spacing: 20) {
-                BodyActivityCard(activity: "Read", completed: 8, total: 10, availableExercises: $availableExercises)
-                BodyActivityCard(activity: "Exercise", completed: tasks.filter { $0.completed }.count, total: tasks.count, availableExercises: $availableExercises)
-                BodyActivityCard(activity: "Nutrition", completed: 5, total: 10, availableExercises: $availableExercises)
-                BodyTasksView(availableExercises: $availableExercises)
-                Spacer()
-            }
-            .padding(.horizontal)
+        VStack(spacing: 20) {
+            BodyActivityCard(activity: "Read", completed: 8, total: 10, availableExercises: $availableExercises)
+            BodyActivityCard(activity: "Exercise", completed: tasks.filter { $0.completed }.count, total: tasks.count, availableExercises: $availableExercises)
+            BodyActivityCard(activity: "Nutrition", completed: 5, total: 10, availableExercises: $availableExercises)
+            BodyTasksView(availableExercises: $availableExercises)
+            Spacer()
         }
+        .padding(.horizontal)
     }
 }
 
