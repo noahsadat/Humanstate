@@ -64,7 +64,7 @@ struct TabButton: View {
                         .fontWeight(.semibold)
                 }
             }
-            .foregroundStyle(selectedTab == tab ? .blue : .white)
+            .foregroundStyle(selectedTab == tab ? .blue : .gray)
             .frame(width: geometry.size.width / 3, height: 48)
         }
     }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DottedBackgroundView: View {
     let dotSize: CGFloat = 2
-    let dotSpacing: CGFloat = 3
+    let dotSpacing: CGFloat = 10
     let dotColor: Color
     let animatedDotColor: Color
     let backgroundColor: Color
@@ -21,18 +21,38 @@ struct DottedBackgroundView: View {
         let screenHeight = UIScreen.main.bounds.height
 
         return backgroundColor
-            .ignoresSafeArea() // Ensure the background color ignores the safe area
+            .ignoresSafeArea()
             .overlay(
                 Canvas { context, _ in
-                    let columns = Int(screenWidth / dotSpacing)
-                    let rows = Int(screenHeight / dotSpacing)
-
-                    for x in 0..<columns {
-                        for y in 0..<rows {
-                            let point = CGPoint(x: CGFloat(x) * dotSpacing, y: CGFloat(y) * dotSpacing)
-                            let rect = CGRect(origin: point, size: CGSize(width: dotSize, height: dotSize))
-
-                            if animatedDots.contains(where: { $0.0 == x && $0.1 == y && $0.2 }) {
+                    // Find the center point of the screen
+                    let centerX = screenWidth / 2
+                    let centerY = screenHeight / 2
+                    
+                    // Calculate how many dots we can fit on each side of the center
+                    let dotsToRight = Int((screenWidth - centerX) / dotSpacing)
+                    let dotsToLeft = Int(centerX / dotSpacing)
+                    let dotsToBottom = Int((screenHeight - centerY) / dotSpacing)
+                    let dotsToTop = Int(centerY / dotSpacing)
+                    
+                    // Draw dots from center outwards
+                    for xOffset in -dotsToLeft...dotsToRight {
+                        for yOffset in -dotsToTop...dotsToBottom {
+                            let point = CGPoint(
+                                x: centerX + CGFloat(xOffset) * dotSpacing,
+                                y: centerY + CGFloat(yOffset) * dotSpacing
+                            )
+                            let rect = CGRect(
+                                x: point.x - (dotSize / 2),
+                                y: point.y - (dotSize / 2),
+                                width: dotSize,
+                                height: dotSize
+                            )
+                            
+                            // Convert screen coordinates to grid coordinates for animation
+                            let gridX = xOffset + dotsToLeft  // Normalize to 0-based index
+                            let gridY = yOffset + dotsToTop   // Normalize to 0-based index
+                            
+                            if animatedDots.contains(where: { $0.0 == gridX && $0.1 == gridY && $0.2 }) {
                                 context.fill(Path(ellipseIn: rect), with: .color(animatedDotColor))
                             } else {
                                 context.fill(Path(ellipseIn: rect), with: .color(dotColor))
@@ -43,7 +63,7 @@ struct DottedBackgroundView: View {
                 .frame(width: screenWidth, height: screenHeight)
                 , alignment: .topLeading
             )
-            .ignoresSafeArea() // Also ensure the overlay ignores the safe area
+            .ignoresSafeArea()
             .onAppear {
                 startAnimation()
             }
@@ -52,8 +72,14 @@ struct DottedBackgroundView: View {
     private func startAnimation() {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
             withAnimation(.easeInOut(duration: 0.9)) {
-                let columns = Int(UIScreen.main.bounds.width / dotSpacing)
-                let rows = Int(UIScreen.main.bounds.height / dotSpacing)
+                // Calculate grid dimensions based on screen size
+                let dotsToRight = Int((UIScreen.main.bounds.width / 2) / dotSpacing)
+                let dotsToLeft = Int((UIScreen.main.bounds.width / 2) / dotSpacing)
+                let dotsToBottom = Int((UIScreen.main.bounds.height / 2) / dotSpacing)
+                let dotsToTop = Int((UIScreen.main.bounds.height / 2) / dotSpacing)
+                
+                let totalColumns = dotsToLeft + dotsToRight + 1  // +1 for center column
+                let totalRows = dotsToTop + dotsToBottom + 1     // +1 for center row
                 
                 // Remove some existing animated dots
                 animatedDots = animatedDots.filter { _ in Bool.random() }
@@ -61,8 +87,8 @@ struct DottedBackgroundView: View {
                 // Add new animated dots
                 let newDotsCount = Int.random(in: 1...20)
                 for _ in 0..<newDotsCount {
-                    let x = Int.random(in: 0..<columns)
-                    let y = Int.random(in: 0..<rows)
+                    let x = Int.random(in: 0..<totalColumns)
+                    let y = Int.random(in: 0..<totalRows)
                     animatedDots.append((x, y, true))
                 }
             }

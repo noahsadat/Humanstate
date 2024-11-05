@@ -9,7 +9,7 @@ struct ProfileView: View {
     var body: some View {
         ZStack {
             DottedBackgroundView(
-                dotColor: Color.white.opacity(0.3),
+                dotColor: Color.gray.opacity(0.3),
                 animatedDotColor: .gray.opacity(1),
                 backgroundColor: Color(UIColor.systemGroupedBackground)
             )
